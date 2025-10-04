@@ -28,14 +28,25 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        engine.handle_input()
-        engine.update()
-        engine.render(SCREEN)
+        if not engine.game_over:
+            engine.handle_input()
+            engine.update()
+            engine.render(SCREEN)
+        else:
+            # Show winner screen
+            font = pygame.font.SysFont("Arial", 50)
+            winner_text = f"{engine.winner} Wins!"
+            text_surface = font.render(winner_text, True, WHITE)
+            SCREEN.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 2 - text_surface.get_height() // 2))
+            pygame.display.flip()
+            # Wait for 3 seconds then exit
+            pygame.time.wait(3000)
+            running = False
 
         pygame.display.flip()
         clock.tick(FPS)
 
     pygame.quit()
-
+    
 if __name__ == "__main__":
     main()

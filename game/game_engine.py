@@ -8,6 +8,9 @@ WHITE = (255, 255, 255)
 
 class GameEngine:
     def __init__(self, width, height):
+        self.max_score = 5  # You can change this value as needed
+        self.game_over = False
+        self.winner = None
         self.width = width
         self.height = height
         self.paddle_width = 10
@@ -40,6 +43,7 @@ class GameEngine:
             self.ball.reset()
 
         self.ai.auto_track(self.ball, self.height)
+        self.check_game_over()
 
     def render(self, screen):
         # Draw paddles and ball
@@ -53,3 +57,11 @@ class GameEngine:
         ai_text = self.font.render(str(self.ai_score), True, WHITE)
         screen.blit(player_text, (self.width//4, 20))
         screen.blit(ai_text, (self.width * 3//4, 20))
+
+    def check_game_over(self):
+        if self.player_score >= self.max_score:
+            self.game_over = True
+            self.winner = "Player"
+        elif self.ai_score >= self.max_score:
+            self.game_over = True
+            self.winner = "AI"
