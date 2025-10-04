@@ -23,6 +23,9 @@ class GameEngine:
         self.player_score = 0
         self.ai_score = 0
         self.font = pygame.font.SysFont("Arial", 30)
+        self.paddle_sound = pygame.mixer.Sound("sounds/hit.wav")
+        self.wall_sound = pygame.mixer.Sound("sounds/bounce.wav")
+        self.score_sound = pygame.mixer.Sound("sounds/score.wav")
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
@@ -32,19 +35,31 @@ class GameEngine:
             self.player.move(10, self.height)
 
     def update(self):
+    # Move the ball and check for paddle collision
+        prev_x, prev_y = self.ball.x, self.ball.y  # Track previous position
         self.ball.move(self.player, self.ai)
-        self.ball.check_collision(self.player, self.ai)
 
+        # Paddle collision sound
+        if self.ball.rect().colliderect(self.player.rect()) or self.ball.rect().colliderect(self.ai.rect()):
+            self.paddle_sound.play()
+
+        # Wall bounce sound
+        if self.ball.y <= 0 or self.ball.y + self.ball.height >= self.height:
+            self.wall_sound.play()
+
+        # Scoring sound
         if self.ball.x <= 0:
             self.ai_score += 1
+            self.score_sound.play()
             self.ball.reset()
         elif self.ball.x >= self.width:
             self.player_score += 1
+            self.score_sound.play()
             self.ball.reset()
 
         self.ai.auto_track(self.ball, self.height)
         self.check_game_over()
-
+        
     def render(self, screen):
         # Draw paddles and ball
         pygame.draw.rect(screen, WHITE, self.player.rect())
